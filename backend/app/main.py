@@ -26,10 +26,14 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="Reality Sandbox API", lifespan=lifespan)
 
+import os
+
+allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:4000").split(",")
+
 # Add CORS middleware to allow frontend on different port
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

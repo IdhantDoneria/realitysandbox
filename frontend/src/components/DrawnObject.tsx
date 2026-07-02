@@ -45,16 +45,16 @@ export function DrawnObject({ obj }: DrawnObjectProps) {
     const zDistance = Math.abs(currentPos.z - handPosition[2]);
 
     // Grab logic
-    if (pinchActive && !isHeldRef.current && distance2D < 2.5 && zDistance < 8.0) { // forgiving Z grab
+    if (handGesture === 'Closed_Fist' && !isHeldRef.current && distance2D < 2.5 && zDistance < 8.0) { // forgiving Z grab
       setIsHeld(true);
       isHeldRef.current = true;
-    } else if (!pinchActive && isHeldRef.current) {
+    } else if (handGesture !== 'Closed_Fist' && isHeldRef.current) {
       setIsHeld(false);
       isHeldRef.current = false;
     }
 
     // Lock gesture logic
-    if (isHeldRef.current && handGesture === 'Closed_Fist' && !obj.isLocked) {
+    if (isHeldRef.current && handGesture === 'Pointing_Up' && !obj.isLocked) {
       updateDrawnObject(obj.id, { isLocked: true });
       setIsHeld(false);
       isHeldRef.current = false;

@@ -23,18 +23,7 @@ export function ExtractedObject({ obj }: { obj: ExtractedObjectData }) {
     return tex;
   }, [obj.texture]);
 
-  useEffect(() => {
-    if (!pinchActive && isHeldRef.current) {
-      isHeldRef.current = false;
-      setIsHeld(false);
-      if (rigidBodyRef.current) {
-        // Drop it!
-        // setBodyType(0) = Dynamic, setBodyType(1) = Fixed, setBodyType(2) = KinematicPosition
-        rigidBodyRef.current.setBodyType(0, true);
-        rigidBodyRef.current.wakeUp();
-      }
-    }
-  }, [pinchActive]);
+  // Dropping logic is now handled in useFrame with handGesture
 
   useFrame(() => {
     if (!rigidBodyRef.current || !handPosition) return;
@@ -47,13 +36,20 @@ export function ExtractedObject({ obj }: { obj: ExtractedObjectData }) {
     const zDistance = Math.abs(currentPos.z - handPosition[2]);
 
     // Grab logic
-    if (pinchActive && !isHeldRef.current && distance2D < 2.5 && zDistance < 8.0) { // forgiving Z grab
+    if (handGesture === 'Closed_Fist' && !isHeldRef.current && distance2D < 2.5 && zDistance < 8.0) { // forgiving Z grab
       setIsHeld(true);
       isHeldRef.current = true;
+    } else if (handGesture !== 'Closed_Fist' && isHeldRef.current) {
+      setIsHeld(false);
+      isHeldRef.current = false;
+      if (rigidBodyRef.current) {
+        rigidBodyRef.current.setBodyType(0, true);
+        rigidBodyRef.current.wakeUp();
+      }
     }
 
     // Lock gesture logic
-    if (isHeldRef.current && handGesture === 'Closed_Fist' && !obj.isLocked) {
+    if (isHeldRef.current && handGesture === 'Pointing_Up' && !obj.isLocked) {
       updateExtractedObject(obj.id, { isLocked: true });
       setIsHeld(false);
       isHeldRef.current = false;

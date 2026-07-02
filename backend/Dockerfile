@@ -15,6 +15,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the rest of the application code
 COPY . .
 
+# Create a non-root user and change ownership of the app directory
+RUN useradd -m appuser && \
+    chown -R appuser:appuser /app
+USER appuser
+
 # Expose the FastAPI port
 EXPOSE 8000
 

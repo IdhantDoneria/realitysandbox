@@ -4,9 +4,12 @@ import { useEffect, useState, useMemo } from 'react';
 import * as THREE from 'three';
 
 import { useSimulationStore } from '@/store';
+import { useAIWebSocket } from '@/lib/useAIWebSocket';
 
 export function WebcamBackground() {
   const [videoElement, setVideoElement] = useState<HTMLVideoElement | null>(null);
+  useAIWebSocket(videoElement);
+
   const isMirrored = useSimulationStore((state) => state.isMirrored);
 
   useEffect(() => {
